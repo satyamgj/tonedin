@@ -6,6 +6,7 @@ import {
   ProductSpecifications,
   SkinAnalysis,
 } from "../models";
+import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: "root" })
 export class ApiService {
@@ -15,7 +16,8 @@ export class ApiService {
     imageBase64: string,
     mimeType: string
   ): Observable<{ analysis: SkinAnalysis }> {
-    return this.http.post<{ analysis: SkinAnalysis }>("/api/analyze-skin", {
+    const base = environment.apiUrl || "";
+    return this.http.post<{ analysis: SkinAnalysis }>(`${base}/api/analyze-skin`, {
       imageBase64,
       mimeType,
     });
@@ -30,10 +32,11 @@ export class ApiService {
     match: ProductMatch;
     product: Partial<ProductSpecifications>;
   }> {
+    const base = environment.apiUrl || "";
     return this.http.post<{
       match: ProductMatch;
       product: Partial<ProductSpecifications>;
-    }>("/api/match-product", {
+    }>(`${base}/api/match-product`, {
       skinAnalysis,
       imageBase64,
       mimeType,

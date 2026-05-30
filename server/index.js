@@ -10,9 +10,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://tonedin.vercel.app",
+      "http://localhost:4200",
+      "https://browser-psi-three.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json({ limit: "15mb" }));
 
 app.get("/api/health", (_req, res) => {
@@ -23,5 +34,5 @@ app.use("/api/analyze-skin", analyzeSkinRouter);
 app.use("/api/match-product", matchProductRouter);
 
 app.listen(PORT, () => {
-  console.log(`TonedIn API running at http://localhost:${PORT}`);
+  console.log(`TonedIn API running on port ${PORT}`);
 });
