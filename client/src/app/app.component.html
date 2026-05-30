@@ -1,0 +1,95 @@
+<header class="header">
+  <div class="container">
+    <h1 class="font-serif">TonedIn</h1>
+    <p class="tagline">Skin tone analysis & beauty product matching</p>
+  </div>
+</header>
+
+<main class="container main">
+  @if (error) {
+    <div class="alert-error" role="alert">{{ error }}</div>
+  }
+
+  <section class="step">
+    <h2 class="font-serif step-title">Step 1 · Your photo</h2>
+    <p class="step-desc">
+      Use natural light, minimal makeup, and a clear front-facing photo.
+    </p>
+    <app-image-upload
+      label="Take or upload portrait"
+      hint="Face and neck visible · good lighting"
+      [previewUrl]="facePreview"
+      [disabled]="loadingSkin"
+      (fileSelected)="onFaceSelected($event)"
+    />
+    @if (loadingSkin) {
+      <p class="status">Analyzing skin tone…</p>
+    }
+  </section>
+
+  @if (skinAnalysis) {
+    <section class="step">
+      <app-skin-analysis-card [analysis]="skinAnalysis" />
+    </section>
+
+    <section class="step" id="step2">
+      <h2 class="font-serif step-title">Step 2 · Product & image</h2>
+      <p class="step-desc">
+        Brand, product name, category, and a clear product photo — that’s all we need.
+      </p>
+
+      <div class="specs-grid card">
+        <div class="field">
+          <label for="brand">Brand</label>
+          <input id="brand" [(ngModel)]="specs.brand" placeholder="e.g. Fenty Beauty" [disabled]="loadingProduct" />
+        </div>
+        <div class="field">
+          <label for="productName">Product name</label>
+          <input id="productName" [(ngModel)]="specs.productName" placeholder="e.g. Gloss Bomb Stix" [disabled]="loadingProduct" />
+        </div>
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" [(ngModel)]="specs.category" [disabled]="loadingProduct">
+            @for (c of categories; track c.value) {
+              <option [value]="c.value">{{ c.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="product-upload">
+        <app-image-upload
+          label="Product image"
+          hint="Swatch, bullet tip, or pan — color clearly visible"
+          [previewUrl]="productPreview"
+          [disabled]="loadingProduct"
+          (fileSelected)="onProductImageSelected($event)"
+        />
+      </div>
+
+      <button
+        type="button"
+        class="btn-primary"
+        [disabled]="loadingProduct"
+        (click)="matchProduct()"
+      >
+        {{ loadingProduct ? "Analyzing match…" : "Check product match" }}
+      </button>
+    </section>
+  }
+
+  @if (matches.length) {
+    <section class="step">
+      <h2 class="font-serif step-title">Your product matches</h2>
+      <div class="matches">
+        @for (m of matches; track m.id) {
+          <app-product-match-card [match]="m.match" [specs]="m.specifications" />
+        }
+      </div>
+    </section>
+  }
+</main>
+
+<footer class="footer">
+  For personal use · AI color guidance, not medical advice
+</footer>
